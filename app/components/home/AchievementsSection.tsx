@@ -1,8 +1,16 @@
 'use client'
 
 import { getAchievements } from '../../../lib/fetchers'
-import CountUp from 'react-countup'
 import { useLanguage } from '../../contexts/LanguageContext'
+
+// Simple counter component since react-countup version has issues
+function Counter({ number, suffix = '' }: { number: number; suffix?: string }) {
+  return (
+    <div className="text-5xl lg:text-6xl font-heading font-bold text-white mb-4">
+      {number.toLocaleString()}{suffix}
+    </div>
+  )
+}
 
 interface AchievementStats {
   total_students: number
@@ -67,10 +75,7 @@ function StatCard({ number, labelKey, suffix = '' }: { number: number; labelKey:
 
   return (
     <div className="text-center">
-      <div className="text-5xl lg:text-6xl font-heading font-bold text-white mb-4">
-        <CountUp end={number} duration={2.5} separator="," />
-        {suffix}
-      </div>
+      <Counter number={number} suffix={suffix} />
       <div className="text-white/80 font-medium text-lg">
         {t(labelKey)}
       </div>
