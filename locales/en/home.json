@@ -1,0 +1,49 @@
+{
+  "hero": {
+    "title": "Welcome to SK Bebuloh WP. Labuan",
+    "subtitle": "Excellence in Education, Excellence in Character"
+  },
+  "welcome": {
+    "title": "Principal's Welcome",
+    "readMore": "Read More"
+  },
+  "vision": {
+    "title": "Our Vision",
+    "content": "A leading educational institution that produces holistic, competitive, and morally upright individuals"
+  },
+  "mission": {
+    "title": "Our Mission", 
+    "content": "To provide quality education through a conducive learning environment, innovative teaching methods, and strong community partnerships"
+  },
+  "staff": {
+    "title": "Featured Staff",
+    "viewAll": "View All Staff"
+  },
+  "pk": {
+    "title": "Academic Departments",
+    "kurikulum": "Curriculum",
+    "hem": "Student Affairs", 
+    "kokurikulum": "Co-curriculum",
+    "viewDashboard": "View Dashboard"
+  },
+  "achievements": {
+    "title": "School Achievements",
+    "students": "Students",
+    "awards": "Awards",
+    "activities": "Activities",
+    "alumni": "Alumni"
+  },
+  "news": {
+    "title": "News & Events",
+    "news": "News",
+    "events": "Events",
+    "readMore": "Read More"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email",
+    "visit": "Visit Us"
+  }
+}
