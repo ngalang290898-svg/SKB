@@ -26,8 +26,8 @@ module.exports = {
         "glow-secondary": "0 0 20px rgba(122,90,248,0.4)"
       },
       fontFamily: {
-        heading: ["Poppins", "Montserrat", "sans-serif"],
-        body: ["Inter", "Roboto Flex", "sans-serif"],
+        heading: ["var(--font-heading)", "Poppins", "Montserrat", "sans-serif"],
+        body: ["var(--font-body)", "Inter", "Roboto Flex", "sans-serif"],
       },
     },
   },
