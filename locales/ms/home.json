@@ -1,0 +1,49 @@
+{
+  "hero": {
+    "title": "Selamat Datang ke SK Bebuloh WP. Labuan", 
+    "subtitle": "Kecemerlangan dalam Pendidikan, Kecemerlangan dalam Sahsiah"
+  },
+  "welcome": {
+    "title": "Ucapan Aluan Guru Besar",
+    "readMore": "Baca Lagi"
+  },
+  "vision": {
+    "title": "Visi Kami",
+    "content": "Institusi pendidikan terkemuka yang melahirkan insan holistik, berdaya saing, dan berakhlak mulia"
+  },
+  "mission": {
+    "title": "Misi Kami",
+    "content": "Memberi pendidikan berkualiti melalui persekitaran pembelajaran yang kondusif, kaedah pengajaran inovatif, dan perkongsian komuniti yang kukuh"
+  },
+  "staff": {
+    "title": "Staf Terpilih", 
+    "viewAll": "Lihat Semua Staf"
+  },
+  "pk": {
+    "title": "Jabatan Akademik",
+    "kurikulum": "Kurikulum",
+    "hem": "Hal Ehwal Murid",
+    "kokurikulum": "Kokurikulum",
+    "viewDashboard": "Lihat Dashboard"
+  },
+  "achievements": {
+    "title": "Pencapaian Sekolah",
+    "students": "Murid",
+    "awards": "Anugerah",
+    "activities": "Aktiviti", 
+    "alumni": "Alumni"
+  },
+  "news": {
+    "title": "Berita & Acara",
+    "news": "Berita",
+    "events": "Acara",
+    "readMore": "Baca Lagi"
+  },
+  "contact": {
+    "title": "Hubungi Kami",
+    "address": "Alamat",
+    "phone": "Telefon",
+    "email": "E-mel",
+    "visit": "Lawati Kami"
+  }
+}
