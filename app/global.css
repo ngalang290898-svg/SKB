@@ -56,7 +56,7 @@ a {
   background: #7a5af8;
 }
 
-/* AOS animations for on-scroll */
+/* AOS animations */
 [data-aos] {
   opacity: 0;
   transition: opacity 0.5s ease, transform 0.5s ease;
