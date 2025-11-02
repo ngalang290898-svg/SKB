@@ -1,7 +1,7 @@
-import { getPkSections } from '../../../lib/fetchers';
+import { getPKSections } from '../../../lib/fetchers';
 import PKPreviewClient from './PKPreviewClient';
 
 export default async function PKPreviewSection() {
-  const pkSections = await getPkSections();
+  const pkSections = await getPKSections();   // 👈 corrected name
   return <PKPreviewClient pkSections={pkSections} />;
 }
