@@ -1,148 +1,157 @@
-/**
- * SK Bebuloh WP Labuan — Supabase Data Fetchers
- * -----------------------------------------------------
- * All Supabase fetchers include:
- * - 8s AbortController timeout
- * - Graceful error handling
- * - Fallback return arrays to prevent undefined crashes
- * - Safe for use in Next.js dynamic server components
- */
-
 import { supabase } from './supabaseClient';
 
-/** Utility function to add timeout safety to Supabase queries */
-async function withTimeout<T>(promise: Promise<T>, ms = 8000): Promise<T> {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), ms);
-
-  try {
-    // @ts-ignore - Supabase supports .signal on fetch
-    const result = await promise;
-    clearTimeout(timeout);
-    return result;
-  } catch (error) {
-    clearTimeout(timeout);
-    console.error(`⏱️ Supabase request timed out after ${ms / 1000}s`, error);
-    throw error;
-  }
+/** Generic timeout wrapper using Promise.race() */
+async function withTimeout<T>(operation: Promise<T>, ms = 4000): Promise<T> {
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error(`Timed out after ${ms} ms`)), ms)
+  );
+  return Promise.race([operation, timeout]);
 }
 
-/** Fetch all staff (ordered alphabetically) */
+/** Defensive check so we don’t hang on missing env vars */
+function hasEnv() {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    console.warn('⚠️ Supabase env vars missing; returning empty data.');
+    return false;
+  }
+  return true;
+}
+
+/* ---------------- Staff ---------------- */
 export async function getAllStaff() {
+  if (!hasEnv()) return [];
   try {
     const { data, error } = await withTimeout(
-      supabase.from('staff').select('*').order('name_en', { ascending: true })
+      supabase.from('staff').select('*').order('name_en').limit(100)
     );
     if (error) throw error;
-    return data || [];
-  } catch (err: any) {
-    console.error('❌ getAllStaff error:', err.message);
+    return data ?? [];
+  } catch (err) {
+    console.error('❌ getAllStaff:', err);
     return [];
   }
 }
 
-/** Fetch a single staff member by ID */
 export async function getStaffById(id: string) {
+  if (!hasEnv()) return null;
   try {
     const { data, error } = await withTimeout(
       supabase.from('staff').select('*').eq('id', id).single()
     );
     if (error) throw error;
-    return data;
-  } catch (err: any) {
-    console.error('❌ getStaffById error:', err.message);
+    return data ?? null;
+  } catch (err) {
+    console.error('❌ getStaffById:', err);
     return null;
   }
 }
 
-/** Fetch featured staff (highlighted on homepage) */
 export async function getFeaturedStaff() {
+  if (!hasEnv()) return [];
   try {
     const { data, error } = await withTimeout(
       supabase.from('staff').select('*').eq('is_featured', true).limit(8)
     );
     if (error) throw error;
-    return data || [];
-  } catch (err: any) {
-    console.error('❌ getFeaturedStaff error:', err.message);
+    return data ?? [];
+  } catch (err) {
+    console.error('❌ getFeaturedStaff:', err);
     return [];
   }
 }
 
-/** Fetch PK Section data (Kurikulum, HEM, Kokurikulum) */
+/* ---------------- PK Sections ---------------- */
 export async function getPKSections() {
+  if (!hasEnv()) return [];
   try {
     const { data, error } = await withTimeout(
-      supabase.from('pk_sections').select('*').order('name_en', { ascending: true })
+      supabase.from('pk_sections').select('*').order('name_en')
     );
     if (error) throw error;
-    return data || [];
-  } catch (err: any) {
-    console.error('❌ getPKSections error:', err.message);
+    return data ?? [];
+  } catch (err) {
+    console.error('❌ getPKSections:', err);
     return [];
   }
 }
 
-/** Fetch all achievements (for AchievementsSection) */
+/* ---------------- Achievements ---------------- */
 export async function getAchievements() {
+  if (!hasEnv()) return [];
   try {
     const { data, error } = await withTimeout(
-      supabase.from('achievements').select('*').order('year', { ascending: false })
+      supabase.from('achievements').select('*').order('year', { ascending: false }).limit(50)
     );
     if (error) throw error;
-    return data || [];
-  } catch (err: any) {
-    console.error('❌ getAchievements error:', err.message);
+    return data ?? [];
+  } catch (err) {
+    console.error('❌ getAchievements:', err);
     return [];
   }
 }
 
-/** Fetch all posts (news & events) */
+/* ---------------- Posts ---------------- */
 export async function getPosts() {
+  if (!hasEnv()) return [];
   try {
     const { data, error } = await withTimeout(
       supabase.from('posts').select('*').order('date', { ascending: false }).limit(10)
     );
     if (error) throw error;
-    return data || [];
-  } catch (err: any) {
-    console.error('❌ getPosts error:', err.message);
+    return data ?? [];
+  } catch (err) {
+    console.error('❌ getPosts:', err);
     return [];
   }
 }
 
-/** Fetch school metadata (name, motto, contact info) */
+/* ---------------- School Metadata ---------------- */
 export async function getSchoolMetadata() {
+  if (!hasEnv())
+    return {
+      name_en: 'Sekolah Kebangsaan Bebuloh WP Labuan',
+      name_bm: 'Sekolah Kebangsaan Bebuloh WP Labuan',
+      address: 'Labuan Federal Territory, Malaysia',
+      phone: '+60 87-xxxxxx',
+      email: 'skb@moe.gov.my',
+    };
+
   try {
     const { data, error } = await withTimeout(
       supabase.from('school_metadata').select('*').limit(1).single()
     );
     if (error) throw error;
     return data;
-  } catch (err: any) {
-    console.error('❌ getSchoolMetadata error:', err.message);
+  } catch (err) {
+    console.error('❌ getSchoolMetadata:', err);
     return {
       name_en: 'Sekolah Kebangsaan Bebuloh WP Labuan',
       name_bm: 'Sekolah Kebangsaan Bebuloh WP Labuan',
       address: 'Labuan Federal Territory, Malaysia',
       phone: '+60 87-xxxxxx',
-      email: 'skb@moe.gov.my'
+      email: 'skb@moe.gov.my',
     };
   }
 }
 
-/** Fetch data concurrently for homepage (optional optimization) */
+/* ---------------- Homepage bundle ---------------- */
 export async function getHomepageData() {
   try {
-    const [staff, pkSections, achievements, posts] = await Promise.all([
+    const [staff, pkSections, achievements, posts] = await Promise.allSettled([
       getFeaturedStaff(),
       getPKSections(),
       getAchievements(),
       getPosts(),
     ]);
-    return { staff, pkSections, achievements, posts };
+
+    return {
+      staff: staff.status === 'fulfilled' ? staff.value : [],
+      pkSections: pkSections.status === 'fulfilled' ? pkSections.value : [],
+      achievements: achievements.status === 'fulfilled' ? achievements.value : [],
+      posts: posts.status === 'fulfilled' ? posts.value : [],
+    };
   } catch (err) {
-    console.error('❌ getHomepageData error:', err);
+    console.error('❌ getHomepageData:', err);
     return { staff: [], pkSections: [], achievements: [], posts: [] };
   }
 }
