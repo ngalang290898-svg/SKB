@@ -1,54 +1,59 @@
-'use client'
+'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+/**
+ * SK Bebuloh WP Labuan
+ * Global Bilingual Language Context
+ * ---------------------------------
+ * Handles site-wide language toggle between English (en)
+ * and Bahasa Malaysia (ms).
+ */
 
-type Language = 'en' | 'ms'
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
-interface LanguageContextType {
-  language: Language
-  toggleLanguage: () => void
-  t: (key: string) => string
+// Define accepted language types
+type Language = 'en' | 'ms';
+
+// Define the context structure
+interface LanguageContextProps {
+  language: Language;
+  toggleLanguage: () => void;
+  setLanguage: (lang: Language) => void;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
+// ✅ Create the Context
+const LanguageContext = createContext<LanguageContextProps | undefined>(undefined);
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState<Language>('en')
-  const [translations, setTranslations] = useState<any>({})
+// ✅ Provider component
+export const LanguageProvider = ({ children }: { children: ReactNode }) => {
+  const [language, setLanguage] = useState<Language>('en');
 
+  // Persist language in localStorage (client only)
   useEffect(() => {
-    // Load translations
-    import(`../../locales/${language}/home.json`).then(module => {
-      setTranslations(module.default)
-    })
-  }, [language])
+    const savedLang = localStorage.getItem('skbebuloh_lang') as Language | null;
+    if (savedLang) setLanguage(savedLang);
+  }, []);
+
+  // Save to localStorage whenever language changes
+  useEffect(() => {
+    localStorage.setItem('skbebuloh_lang', language);
+  }, [language]);
 
   const toggleLanguage = () => {
-    setLanguage(prev => prev === 'en' ? 'ms' : 'en')
-  }
-
-  const t = (key: string): string => {
-    const keys = key.split('.')
-    let value: any = translations
-    
-    for (const k of keys) {
-      value = value?.[k]
-    }
-    
-    return value || key
-  }
+    setLanguage((prev) => (prev === 'en' ? 'ms' : 'en'));
+  };
 
   return (
-    <LanguageContext.Provider value={{ language, toggleLanguage, t }}>
+    <LanguageContext.Provider value={{ language, toggleLanguage, setLanguage }}>
       {children}
     </LanguageContext.Provider>
-  )
-}
+  );
+};
 
-export function useLanguage() {
-  const context = useContext(LanguageContext)
-  if (context === undefined) {
-    throw new Error('useLanguage must be used within a LanguageProvider')
+// ✅ Hook for consuming the language context
+export const useLanguage = () => {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error('useLanguage must be used within a LanguageProvider');
   }
-  return context
-}
+  return context;
+};
