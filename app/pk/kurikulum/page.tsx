@@ -1,13 +1,17 @@
-import { getPKSections } from '../../../lib/fetchers'
+import { getPKSections } from '../../../lib/fetchers';
+
+// Prevent static generation timeout on Vercel
+export const dynamic = 'force-dynamic';
 
 export default async function KurikulumPage() {
-  const sections = await getPKSections()
-  const section = sections.find(s => s.slug === 'kurikulum') || {
-    name_en: 'Curriculum',
-    name_bm: 'Kurikulum',
-    description_en: 'Academic excellence and curriculum development',
-    description_bm: 'Kecemerlangan akademik dan pembangunan kurikulum'
-  }
+  const sections = await getPKSections();
+  const section =
+    sections.find((s) => s.slug === 'kurikulum') || {
+      name_en: 'Curriculum',
+      name_bm: 'Kurikulum',
+      description_en: 'Academic excellence and curriculum development',
+      description_bm: 'Kecemerlangan akademik dan pembangunan kurikulum',
+    };
 
   return (
     <div className="min-h-screen bg-gradient-deep pt-20">
@@ -20,19 +24,19 @@ export default async function KurikulumPage() {
             <p className="text-gray-300 text-lg mb-8">
               {section.description_en}
             </p>
-            
+
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Dashboard cards would go here */}
+              {/* Dashboard cards */}
               <div className="bg-white/5 rounded-xl p-6 border border-white/10">
                 <h3 className="text-white font-semibold mb-2">Academic Performance</h3>
                 <p className="text-gray-400 text-sm">Student achievement metrics</p>
               </div>
-              
+
               <div className="bg-white/5 rounded-xl p-6 border border-white/10">
                 <h3 className="text-white font-semibold mb-2">Teacher Allocation</h3>
                 <p className="text-gray-400 text-sm">Staff and subject assignments</p>
               </div>
-              
+
               <div className="bg-white/5 rounded-xl p-6 border border-white/10">
                 <h3 className="text-white font-semibold mb-2">Curriculum Calendar</h3>
                 <p className="text-gray-400 text-sm">Academic schedule and events</p>
@@ -42,5 +46,5 @@ export default async function KurikulumPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
