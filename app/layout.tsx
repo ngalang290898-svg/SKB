@@ -1,7 +1,6 @@
-// app/layout.tsx
 import './globals.css';
 import { Inter, Poppins } from 'next/font/google';
-import ClientProviders from './ClientProviders';   // 👈 import wrapper
+import ClientProviders from './ClientProviders';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -41,7 +40,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body">
-        {/* 👇 render all client-only providers here */}
+        {/* 👇 Wrap everything in a client-only provider */}
         <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
