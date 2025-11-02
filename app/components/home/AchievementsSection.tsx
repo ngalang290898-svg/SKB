@@ -1,6 +1,8 @@
 import { getAchievements } from '../../../lib/fetchers';
 import AchievementsClient from './AchievementsClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AchievementsSection() {
   const achievements = await getAchievements();
 
