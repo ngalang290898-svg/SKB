@@ -1,59 +1,106 @@
 'use client';
 
 /**
- * SK Bebuloh WP Labuan
- * Global Bilingual Language Context
- * ---------------------------------
- * Handles site-wide language toggle between English (en)
- * and Bahasa Malaysia (ms).
+ * LanguageContext
+ * - Provides: language, toggleLanguage, setLanguage, t()
+ * - t(key) resolves dot-separated keys inside JSON locale files.
+ *
+ * Place this file at: app/contexts/LanguageContext.tsx
+ * Locale JSON files expected at: /locales/en/home.json and /locales/ms/home.json
  */
 
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
+import enHome from '../../locales/en/home.json';
+import msHome from '../../locales/ms/home.json';
 
-// Define accepted language types
 type Language = 'en' | 'ms';
 
-// Define the context structure
 interface LanguageContextProps {
   language: Language;
-  toggleLanguage: () => void;
   setLanguage: (lang: Language) => void;
+  toggleLanguage: () => void;
+  /**
+   * t - translation helper
+   * accepts a dot-separated key string, e.g. "hero.title" or "achievements.title"
+   * returns the translated string or the provided fallback or the key itself if missing.
+   */
+  t: (key: string, fallback?: string) => string;
 }
 
-// ✅ Create the Context
 const LanguageContext = createContext<LanguageContextProps | undefined>(undefined);
 
-// ✅ Provider component
-export const LanguageProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguage] = useState<Language>('en');
+function getNested(obj: any, key: string) {
+  if (!obj || !key) return undefined;
+  const parts = key.split('.');
+  let cur = obj;
+  for (const p of parts) {
+    if (cur && typeof cur === 'object' && p in cur) cur = cur[p];
+    else return undefined;
+  }
+  return cur;
+}
 
-  // Persist language in localStorage (client only)
+export const LanguageProvider = ({ children }: { children: ReactNode }) => {
+  const [language, setLanguageState] = useState<Language>('en');
+
   useEffect(() => {
-    const savedLang = localStorage.getItem('skbebuloh_lang') as Language | null;
-    if (savedLang) setLanguage(savedLang);
+    // Restore language from localStorage if exists
+    try {
+      const saved = localStorage.getItem('skbebuloh_lang') as Language | null;
+      if (saved === 'en' || saved === 'ms') setLanguageState(saved);
+    } catch (e) {
+      // ignore (SSR safety)
+    }
   }, []);
 
-  // Save to localStorage whenever language changes
   useEffect(() => {
-    localStorage.setItem('skbebuloh_lang', language);
+    try {
+      localStorage.setItem('skbebuloh_lang', language);
+    } catch (e) {
+      // ignore (SSR safety)
+    }
   }, [language]);
 
-  const toggleLanguage = () => {
-    setLanguage((prev) => (prev === 'en' ? 'ms' : 'en'));
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
   };
 
-  return (
-    <LanguageContext.Provider value={{ language, toggleLanguage, setLanguage }}>
-      {children}
-    </LanguageContext.Provider>
-  );
+  const toggleLanguage = () => {
+    setLanguageState((prev) => (prev === 'en' ? 'ms' : 'en'));
+  };
+
+  // memoize the current translations object
+  const translations = useMemo(() => {
+    // default to English if unknown
+    if (language === 'ms') return msHome as Record<string, any>;
+    return enHome as Record<string, any>;
+  }, [language]);
+
+  const t = (key: string, fallback?: string) => {
+    // Try to get from translations
+    const found = getNested(translations, key);
+    if (typeof found === 'string') return found;
+    // If not found, try fallback language (English)
+    const fallbackObj = getNested(enHome, key);
+    if (typeof fallbackObj === 'string') return fallbackObj;
+    // else return provided fallback or the key itself
+    return fallback ?? key;
+  };
+
+  const value: LanguageContextProps = {
+    language,
+    setLanguage,
+    toggleLanguage,
+    t,
+  };
+
+  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
 };
 
-// ✅ Hook for consuming the language context
 export const useLanguage = () => {
-  const context = useContext(LanguageContext);
-  if (!context) {
-    throw new Error('useLanguage must be used within a LanguageProvider');
+  const ctx = useContext(LanguageContext);
+  if (!ctx) {
+    throw new Error('useLanguage must be used within LanguageProvider');
   }
-  return context;
+  return ctx;
 };
